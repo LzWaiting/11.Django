@@ -1,0 +1,63 @@
+关系映射
+    1. 一对一
+        1. 语法
+	    在关联的两个类中的任何一个类中
+	    属性=models.OneToOneField(Entry)
+	    et:
+	        class Author(models.Model):
+		    ... ...
+
+		class Wife(models.Model):
+		    ... ...
+		    author = models.OneToOneField(Author)
+
+		注意：在数据库中，在wife表中生成一个外键列（author_id），要引用自表author中的主键,在Author 的实体中，增加一个隐式属性wife
+	2. 查询
+	    1. 正向查询：直接通过关联属性查询即可
+	        et:
+		    通过wife 找 author
+		    wife = Wife.objects.get(id=id)
+		    author = wife.author
+	    2. 反向查询：通过反向引用属性查询
+	        et:
+		    通过 author 找 wife
+		    author = Author.objects.get(id=id)
+		    wife = author.wife
+    2. 一对多
+	1. 语法
+	    在‘多’实体中增加对‘一’实体的引用
+	    属性 = models.ForeignKey(Entry)
+	    et：
+	        Book（多） 和 Publisher（一） 实现一对多关联映射
+		class Publisher(models.Model):
+		    ... ...
+
+		class Book(models.Model):
+		    ... ...
+		    publisher = models.ForeignKey(Publisher)
+	2. 查询
+	    1. 正向查询：通过Book 查询 Publisher
+	        book = Book.objects.get(id=1)
+		book_publisher = book.publisher
+	    2. 反向查询：Django默认会在Publisher实体中增加book_set属性，来表示对应的所有书籍的查询对象(objects)
+	        publisher = Publisher.objects.get(id=1)
+		books = publisher.book_set.all()
+    3. 多对多
+        1. 语法
+	    在关联的两个类的任意一个类中，增加
+	    属性 = models.ManyToManyField(Entry)
+	    et：
+	        class Author(models.Model):
+		    ... ...
+		class Book(models.Model):
+		    ... ...
+		    authors = models.ManyToManyField(Author)
+	2. 查询
+	    1. 正向查询：通过Book查询Author的信息
+	    	注意：authors属性只是提供了对关联表的一个查询引用（objects）
+	    	book = Book.objects.get(id=1)
+		authors = book.authors.all()
+	    2. 反向查询：通过Author查询Book的信息
+	        注意：在关联实体Author中默认增加book_set属性
+	        author = Author.objects.get(id=1)
+		books = author.book_set.all()

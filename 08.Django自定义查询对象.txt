@@ -1,0 +1,16 @@
+Django ORM
+    自定义查询对象--objects
+    Entry.objects
+    objects 的类型是models.Manager
+    1. 声明一个类EntryManager 继承自 models.Manager
+        允许在EntryManager 中添加自定义函数
+	et:
+	    class EntryManager(models.Manager):
+	        def 函数名(self,自定义参数列表)：
+		    ... ...
+		    return ... ...
+    2. 使用 EntryManager 来覆盖原有的 Models 类中的objects
+        et：
+	    class Entry(models.Model):
+	        objects = EntryManager()
+		... ...

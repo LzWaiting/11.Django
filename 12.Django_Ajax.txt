@@ -1,0 +1,24 @@
+Ajax
+见示例DjangoDemo04
+注意：
+    1. 在$.post();发送异步请求时，注意处理csrf_token,
+    2. 在视图处理函数中，JquerySet 对象 转换为json格式字符串，需要导入serializers
+        from django.core import serializers
+	def xxx_views(request):
+	    users = User.objects.all()
+	    jsonStr = serializers.serialize('json',users)
+	    return HttpResponse(jsonStr)
+	    注意：
+	    	输出的jsonStr字符串为json格式
+		格式如下：
+		[
+		  {
+		    "model":"user",
+		    "pk":"user.id",
+		    "fields":{
+		      "属性1":"值1",
+		      "属性2":"值2",
+		      ... ...
+		    }
+		  }
+		]

@@ -1,0 +1,102 @@
+使用forms模块处理表单
+    1. forms模块的作用
+        通过forms模块，允许将表单与class相结合，允许通过class生成表单
+    2. 使用 forms 模块
+        1. 创建 forms.py 文件
+	2. 导入 django 的 forms 模块
+	    from django import forms
+	3. 创建 class,一个class 对应生成一个表单
+	    class ClassName(forms.Form)
+	        pass
+	4. 在 class 中创建属性
+	    一个属性对应到表单中会生成一个控件
+    3. 在模板中解析 form 对象
+        1. 注意
+	    1. 需要自定义<form>
+	    2. 需要自定义按钮
+	2. 处理方法
+	    1. 在视图中创建form对象，并发送到模板中
+		et:
+		    form = RemarkForm()
+		    return render(request,'xxx.html',locals())
+	    2. 在模板中解析 form 对象
+	        1. 手动解析
+		    在模板中
+		        {% for field in form %}
+			    {{ field }}		//表示的就是控件
+			    {{ field.label }}   //表示的是控件中label的值
+			{% endfor %}
+		2. 自动解析
+		    1. {{ form.as_p }}
+		        将form 对象中的每个属性使用p标记包裹起来，再显示
+		    2. {{ form.as_ul }}
+		        将form 对象中的每个属性使用li标记包裹起来，再显示在网页上
+			注意：必须手动提供<ol></ol>或<ul></ul>
+		    3. {{ form.as_table }}
+		        将form 对象中的每个属性使用tr标记包裹起来，再显示在网页中
+			注意：必须手动提供<table></table>
+    4. 在视图中，通过forms.Form自动获取表单数据
+        1. 通过forms.Form 的构造器来接收post数据
+	    form = xxxForm(request.POST)
+	2. 必须使form通过验证之后，再取值
+	    form.is_valid()
+	    返回True：提交的数据已通过所有验证，允许取值
+	    返回False: 提交的数据未通过验证，无法取值
+	3. 获取表单中的数据
+	    通过 form.cleaned_data 来接收提交的数据，返回值为字典
+    5. forms 模块的高级处理
+        将forms 和 models 结合到一起使用
+	1. 在 forms.py 中创建class,继承自forms.ModelForm
+	2. 创建内部类Meta,去关联 Model
+	    1. model：指定要关联的实体类
+	    2. fields：指定从Model中取哪些字段生成控件
+	        1. 取值‘__all__’,表示全部属性都要生成控件
+		2. 取值 列表，声明允许生成控件的属性名
+	    3. labels：指定每个属性所关联的label，取值为字典
+	        labels = {
+		    '属性名':'label文本',
+		    '属性名':'label文本',
+		    ... ...
+		}
+    6. forms 模块内置小部件
+        小部件（widget）,表示生成到页面上的控件的类型以及其他的html属性
+	1. 常用小部件类型
+	    1. TextInput : type='text'
+	    2. PasswordInput : type='password'
+	    3. NumberInput : type='number'
+	    4. EmailInput : type='email'
+	    5. URLInput : type='url'
+	    6. HiddenInput : type='hidden'
+	    7. CheckboxInput : type='checkbox'
+	    8. Textarea : <textarea></textarea>
+	    9. Select : <select></select>
+	2. 小部件的使用
+	    1. 继承自 forms.Form
+	        1. 基本版
+		    只指定控件的类型
+		    class RemarkForm(forms.Form):
+		        属性 = forms.CharField(label='文本名',
+			    widget=forms.小部件类型)
+		2. 高级版
+		    指定控件类型的基础上还允许设置html的一些相关属性
+			属性 = forms.CharField(label='文本',
+			    widget=forms.小部件类型(
+			        attrs = {
+				    'html属性名':'属性值',
+				    'html属性名':'属性值',
+				}
+			    )
+			) 
+	    2. 继承自 forms.ModelForm
+	        class xxxForm(forms.ModelForm):
+		    class Meta:
+		        model = User
+			fields = '__all__'
+			labels = {
+			    '属性1'：'Label1',
+			    ... ...
+			}
+			widgets = {
+			    '属性1'：forms.小部件类型(attrs={}),
+			    ... ...
+			}

@@ -1,0 +1,91 @@
+模型 - Models
+    1. 什么是模型
+        根据数据表结构而创建出来的class
+    2. ORM
+        对象关系映射（Object Relational Mapping）
+        三大特征：
+            1. 表 与 类 映射
+	    2. 数据类型 映射
+	    3. 关    系 映射
+    3. 创建 和 配置 数据库
+        1. 创建数据库 - webdb
+	    create database webdb default charset utf8 collate utf8_general_ci;
+	2. Django的数据库配置
+	    在 settings.py 中配置数据库的信息
+	    DATABASES = {
+	        'default':{
+		    'ENGINE':'django.db.backends.sqlite3',
+		    'NAME':os.path.join(BASE_DIR,'db.sqlite3')
+		}
+	    }
+	    1. ENGINE:指定要连接的数据库的驱动程序
+	        连接mysql的话可以取值为‘django.db.backends.mysql’
+	    2. NAME:指定要连接到的数据库的名称
+	        数据库名
+	    3. USER：指定登录到数据库管理系统的用户名
+	        连接到 mysql 的话 可以为 root
+	    4. PASSWORD：指定登录到数据库管理系统的密码
+	    5. HOST：指定要连接到的主机地址
+	        如果是本机的话：127.0.0.1/localhost
+	    6. PORT：指定端口号
+	        mysql的默认值为 3306
+        3. 数据库的同步操作
+	    1. ./manage.py makemigrations
+	        作用：将每个应用下的models.py文件生成一个数据库的中间文件，并将中间文件保存到migrations的目录中
+	    2. ./manage.py migrate
+	        作用：将每个应用下的migrations目录中的中间文件同步到数据库中
+	4. 编写 Models
+	    语法规范
+	        class ClassName(models.Model):
+		    属性 = models.FIELDTYPE(FIELD_OPTIONS)
+		    FIELDTYPE:字段类型
+		        1. BooleanField()
+			    编程语言中使用True或False来表示该列的值，
+			    数据库中使用1 或 0 来表示具体的值，数据类型tinyint()
+		        2. CharField()
+			    编程语言中使用字符串来表示该列的值
+			    数据库中也是字符串，数据类型为varchar
+			    注意：必须要指定max_length参数值
+			3. DateField()
+			    编程语言中使用字符串或Date类型的数据表示该值
+			    数据库中使用的是时间字符串，数据类型date
+			4. DateTimeField()
+			    数据类型为datetime
+			5. DecimalField()
+			    编程语言中使用数字（小数）来表示该列的值
+			    数据库使用小数表示，数据类型：decimal
+			    et：
+			        money = models.DecimalField(max_digits=7,decimal_places=2)
+			6. FloatField()
+			    编程语言中使用数字（小数）来表示该列的值
+			    数据库使用小数，数据类型float
+			7. IntegerField()
+			    数据类型int
+			8. EmailField()
+			    编程语言中使用字符串来表示一段Email地址
+			    数据库使用字符串表示，数据类型varchar
+			9. URLField()
+			    编程语言中使用字符串来表示一段网址
+			    数据库中使用字符串表示 数据类型varchar
+			10. ImageField()
+			    目的：存储图片路径
+			    数据类型varchar
+			    image=models.ImageField(upload_to='image/')
+		    FIELDOPTIONS：字段选项
+		        1. default
+			    作用：为当前字段指定默认值
+			2. null
+			    作用：指定当前字段是否允许为空，默认为False,不能为空
+			3. db_index
+			    作用：是否为当前字段指定索引
+			4. db_column
+			    作用：指定当前属性映射到表中的字段名，如果不指定则采用属性名称作为字段名
+		        5. max_length
+			    作用：指定字段字符长度
+    4. 模型相关指令
+        1. 版本切换指令
+	    ./manage.py migrate 应用名称 版本号
+	    et:
+	        ./manage.py migrate index 0001
+	2. 通过数据库自动导出models类
+	    ./manage.py inspectdb > 文件名.py

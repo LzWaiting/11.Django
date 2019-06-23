@@ -1,0 +1,31 @@
+Django 重量级 Web 框架
+    1. 什么是Django
+        Django是一个开源框架，采用Python语言编写的，早期时主要做新闻和内容管理的网站。Django本身提供了非常强大的后台管理系统
+	版本：
+	    最新：2.1.2
+	    使用：1.11.8
+	官网：http://www.djangoproject.com
+	中文文档：http://djangobook.py3k.cn/2.0/
+    2. 框架模式
+        MTV
+	M : Models	数据库模型
+	T ：Templates	模板（网页）
+	V ：Views	视图
+    3. Django 框架的安装
+	1. 查看已安装的Django版本
+	    1. 进入到终端以及python的交互模式（python3/ipython3）
+	    2. 在交互模式中输入：import django
+		如果未报错：当前环境中已经装好Django
+		如果报错：当前环境中没有Django
+	    3. 查看已安装版本
+		django.VERSION
+	2. 安装Django
+	    1. 在线安装
+		sudo pip3 install django
+		sudo pip3 install django==1.11.8	//安装指定版本
+	    2. 离线安装
+		1. 下载安装包
+		2. 解压安装包
+		    tar -xvf Django-1.11.8.tar.gz
+		3. 进入到解压目录中，找到setup.py文件
+		    sudo python3 setup.py install

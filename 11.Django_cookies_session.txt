@@ -1,0 +1,41 @@
+cookies 在 Django 中的实现
+    1. 设置cookies 的值
+        语法:
+	    响应对象.set_cookie(key,value,expires)
+	    key:cookie 的名字
+	    value:cookie 的值
+	    expires:保存时间，以s为单位
+	et:
+	    响应对象.set_cookie('uname','waiting',365*24*60*60)
+	响应对象：
+	    1. HttpResponse
+	        resp = HttpResponse('给客户端的字符串')
+		resp.set_cookie('key','value',expires)
+		return resp
+	    2. render()
+	        resp = render(request,'xxx.html',locals())
+		resp.set_cookie('key','value',expires)
+		return resp
+	    3. HttpResponseRedirect/redirect
+	        resp = redirect('地址')
+		resp.set_cookie('key','value',expires)
+		return resp
+    2. 获取cookies 的值
+        通过 request.COOKIES 获取当前站点下所有的cookies的信息
+session 在 Django 中的实现
+    1. 设置session 的值
+        request.session['key']='value'
+    2. 获取session 的值
+        value = request.session['key']
+	value = request.session.get('key')
+    3. 删除session 的值
+        del request.session['key']
+    4. 在 settings.py 中设置session的相关配置
+        1. SESSION_COOKIE_AGE
+	    作用：设置sessionID在cookies中的保存时间
+	    et:
+	        SESSION_COOKIE_AGE = 60*60*24
+	2. SESSION_EXPIRE_AT_BROWSER_CLOSE
+	    作用：设置关闭浏览器时则清空服务器上对应的session空间
+	    et:
+	        SESSION_EXPIRE_AT_BROWSER_CLOSE = True

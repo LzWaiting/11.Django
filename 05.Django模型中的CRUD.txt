@@ -1,0 +1,139 @@
+模型中的CRUD
+    1. 增加数据
+        1. Entry.objects.create(属性=值，属性=值)
+	    Entry:表示实体类名称
+	    返回值：创建好的实体对象
+	2. 创建一个 Entry 对象，并通过save()进行保存
+	    obj = Entry(属性=值，属性=值，...)
+	    或则 obj.属性 = 值
+	    obj.save()
+	    注意：无返回值，保存成功后，obj会被重新赋值
+	3. 使用字典构建对象，并通过save()进行保存
+	    dic = {
+	        ‘属性1’：‘值1’，
+		‘属性2’：‘值2’，
+		...
+	    }
+	    obj = Entry(**dic)
+	    obj.save()
+    2. 查询数据
+        通过Entry.objects 调用查询接口函数
+	et:
+	    Entry.objects.filter()
+	    Entry.objects.exclude()
+        所有的查询接口函数，都可以通过一个query属性来得到对应的sql语句
+	    Entry.objects.filter().query
+	1. 基本查询操作
+	    语法：all()
+	    用法：Entry.objects.all()
+	    返回：QuerySet(查询结果集，是封装了若干对象的列表)
+	2. 查询返回指定列
+	    语法：values() 或 values('列1','列2',...)
+	    作用：查询一个QuerySet中的部分列，并封装成字典，再放到列表中
+	    用法：
+	        Entry.objects.values()
+		Entry.objects.values('列1','列2',...)
+	    注意：也允许将values()放在其他返回查询结果集的方法的后面
+	        Entry.objects.all().values()
+	3. 查询返回指定列
+	    语法：values_list()
+	    作用：将查询结果封装到元组中再封装到列表中
+	    用法：同values()
+	4. 只查询一条数据
+	    语法：get(条件)
+	    作用：查询只返回一条数据
+	    用法：Entry.objects.get(条件)
+	    注意：
+	        该方法只能查询一条数据
+		查询多于一条数据或没查询出结果的话那么都会抛异常
+	5. 根据条件查询部分行数据
+	    语法：filter(条件)
+	    用法：Entry.objects.filter(条件)
+	    et:
+	        1. 查询id 为1 的author信息
+		    Author.objects.filter(id=1)
+		2. 查询id为1，并且name为王老师的信息
+		    Author.objects.filter(id=1,name='王老师')
+		    注意：
+		        1. 多条件，使用‘，’隔开
+			2. 用‘，’隔开的条件，映射到sql语句是使用and来连接的
+		3. 查询age>= 30 的信息
+		    Author.objects.filter(age>=30) // 错误
+		    Author.objects.filter(age__gte=30) // 正确
+		在条件查询中，Django提供了若干查询谓词（Field Looups）,可以完成非等值条件的查询
+		Entry.objects.filter(属性__查询谓词=值)
+		所有支持条件查询的位置处都支持查询谓词：filter(),get(),exclude()
+	6. 对条件取反
+	    语法：exclude(条件)
+	    用法：Entry.objects.exclude(条件)
+	    et:
+	        Author.objects.exclude(id=1)
+	7. 聚合查询（不带分组）
+	    语法：aggregate(聚合列名=聚合函数（‘属性’）)
+	    	Entry.objects.aggregate(聚合列名=聚合函数（‘属性’）)
+	    et：
+	        Author.objects.all().aggregate(avg=Avg('age'))
+		Author.objects.all().aggregate(sum=Sum('age'))
+	    聚合函数：
+	        Avg()
+		Count()
+		Max()
+		Min()
+		Sum()
+	8. 聚合查询（带分组）
+	    语法：annotate()
+	    用法：Entry.objects.all().values('列1','列2',...).annotate(聚合列名=聚合函数（‘属性’）)
+	9. 排序查询
+	    语法：order_by()
+	    用法：Entry.objects.order_by('列1','列2')
+	    注意：默认升序排序，在列名前添加‘-’表示降序排序
+    3. 修改数据
+        1. 修改单个实体
+	    1. 查
+	        通过get()得到要修改的实体对象
+	    2. 改
+	        通过对象的属性修改对象的值
+	    3. 保存
+	        通过对象的save()保存回数据库
+	2. 批量修改数据
+	    1. 调用QuerySet的update(属性=值，属性=值)实现批量修改
+	        et:
+		    Author.objects.filter(isActive=False).update(isActive=True)
+    4. 删除数据
+        调用实体对象查询结果集的delete() 完成删除
+	1. 删除单个实体
+	    Author.objects.get(id=4).delete()
+	2. 删除多个对象
+	    Author.objects.filter(isActive=False).delete()
+    5. F 查询 和 Q 查询
+        1. F()
+	    作用：在执行中获取某列的值
+	    // 更新Author中所有人的age都加10
+	    et:
+	        SQL：update author set age=age+10
+	        Django: 
+		    Author.objects.update(age=age+10)	// 错误表示
+		    // 正确表示
+		    from django.db.models import F
+		    F('列名')：允许取出该列的值
+		    Author.objects.update(age=F('age')+10)
+	2. Q()
+	    作用：在查询条件中可以完成 or 操作
+	    语法：
+	        from django.db.models import Q
+		Q(条件)|Q(条件)
+	    et:
+	        查询Author中id为1 或 年龄为 44 的人的信息
+		Author.objects.filter(Q(id=1)|Q(age=44))
+    6. 原生的数据库操作方法
+        1. 查询
+	    函数：raw(sql语句)
+	    语法：Entry.objects.raw(sql语句)
+	    返回值: QuerySet
+	2. 增删改
+	    from django.db import connection
+	    def doSQL(request):
+		with connection.cursor() as cursor:
+		    sql = 'insert into ...'
+		    cursor.execute(sql)
+		    return ''
